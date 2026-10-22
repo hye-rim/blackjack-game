@@ -3,7 +3,7 @@
 // 블랙잭: 규칙만 모아 둔 파일 (그리기·입력 없음). 브라우저와 테스트(Node)가 같이 쓴다. 칩은 게임용 칩이다.
 //
 // - 6덱 슈. 21에 가깝게 만들되 넘으면(버스트) 진다. 딜러는 17 이상이면 멈춘다(소프트 17도 멈춤)
-// - 처음 두 장이 A+10(블랙잭)이면 배당 3:2. 이기면 건 만큼, 비기면 돌려받고, 지면 잃는다
+// - 처음 두 장이 A+10(블랙잭)이면 배당 3:2(반 칩은 내림). 이기면 건 만큼, 비기면 돌려받고, 지면 잃는다
 // - 히트(한 장 더) · 스탠드(멈춤) · 더블(처음 두 장일 때 판돈을 두 배로 걸고 딱 한 장만 받음) · 스플릿(같은 숫자 두 장을 두 손으로 나눔, 한 번만)
 // - 스플릿한 에이스는 한 장씩만 받고, 스플릿 뒤의 21은 블랙잭으로 치지 않는다
 const LOGIC_BJ = (() => {
@@ -152,7 +152,7 @@ function finishRound(st) {
     const v = handValue(h.cards).total, nat = isNatural(h);
     let r, pay;
     if (v > 21) { r = 'bust'; pay = 0; }
-    else if (nat && !dBJ) { r = 'blackjack'; pay = h.bet * 2.5; }
+    else if (nat && !dBJ) { r = 'blackjack'; pay = h.bet + Math.floor(h.bet * 1.5); }   // 3:2, 반 칩은 버린다 (5칩 → +7)
     else if (dBJ && !nat) { r = 'lose'; pay = 0; }
     else if (nat && dBJ) { r = 'push'; pay = h.bet; }
     else if (d > 21 || v > d) { r = 'win'; pay = h.bet * 2; }

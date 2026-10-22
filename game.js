@@ -29,8 +29,11 @@ const store = {
   get(k) { try { return localStorage.getItem(k); } catch (_) { return null; } },
   set(k, v) { try { localStorage.setItem(k, v); } catch (_) {} },
 };
-const savedChips = store.get('blackjackChips');
-let best = Number(store.get('blackjackBest')) || 0;
+// 예전 판(블랙잭 3:2 를 반 칩까지 주던 때)에 저장된 1,007.5 같은 값은 내려서 쓴다
+const savedChips = store.get('blackjackChips') === null ? null : String(Math.floor(Number(store.get('blackjackChips')) || 0));
+let best = Math.floor(Number(store.get('blackjackBest')) || 0);
+if (savedChips !== null && store.get('blackjackChips') !== savedChips) store.set('blackjackChips', savedChips);
+if (store.get('blackjackBest') !== null && store.get('blackjackBest') !== String(best)) store.set('blackjackBest', String(best));   // 로비 카드도 내린 값을 읽게
 function save() {
   store.set('blackjackChips', String(st.chips));        // 판돈을 건 순간에도 저장: 새로고침으로 진 판을 없던 일로 못 하게
   if (st.bestChips > best) { best = st.bestChips; store.set('blackjackBest', String(best)); }
